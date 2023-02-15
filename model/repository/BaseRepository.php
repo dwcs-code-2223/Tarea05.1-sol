@@ -68,7 +68,7 @@ abstract class BaseRepository implements IBaseRepository {
 
         $resultado = $sentencia->get_result();
 
-        $exito= ($resultado->num_rows() ===1);
+        $exito= ($resultado->num_rows ===1);
         
         $sentencia->close();
         $resultado->close();
@@ -120,7 +120,8 @@ abstract class BaseRepository implements IBaseRepository {
     public function readNoPreparada($id) {
 
         $result = $conn->query("SELECT * FROM $this->table_name "
-                . "WHERE $this->pk_name = :id");
+                . "WHERE $this->pk_name = $id");
+   
 //Llama al constructor después de establecer las propiedades. 
         $object = $result->fetch_object($this->class_name);
 
