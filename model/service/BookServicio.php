@@ -34,14 +34,14 @@ class BookServicio {
                 $publisher->setStatus(Util::OPERATION_OK);
             }
         } catch (\Exception $ex) {
-            echo "Ha ocurrido una excepción: " . $ex->getMessage();
+            echo "Ha ocurrido una excepción: " . $ex->getMessage() . $ex->getTraceAsString();
             $publisher = null;
         }
         return $publisher;
     }
 
     public function addAuthor(Author $author): Author {
-        
+
         //TO DO 
         //Comprobar que no exista ya un autor con los mismos datos
         //Como en Publisher
@@ -61,39 +61,46 @@ class BookServicio {
 
         try {
             //comenzamos transaction
-             $this->book_repository->beginTransaction();
-             
+            $this->book_repository->beginTransaction();
+
             //For debug only 
             //$this->book_repository->delete(99);
-           
-                $book = $this->book_repository->create($book);
 
-                if (isset($authors) && count($authors) > 0):
-                    foreach ($authors as $author_id):
-                        $exito = $exito && $this->book_repository->addAuthorToBook($book->getBook_id(), $author_id);
-                        if (!$exito):
-                            break;
-                        endif;
-                    endforeach;
-                endif;
+            $book = $this->book_repository->create($book);
 
-                //confirmamos la transaction
-               $this->book_repository->commit();
-            
+            if (isset($authors) && count($authors) > 0):
+                foreach ($authors as $author_id):
+                    $exito = $exito && $this->book_repository->addAuthorToBook($book->getBook_id(), $author_id);
+                    if (!$exito):
+                        break;
+                    endif;
+                endforeach;
+            endif;
+
+            //confirmamos la transaction
+            $this->book_repository->commit();
         } catch (Exception $ex) {
             echo "Ha ocurrido una exception: <br/> " . $ex->getMessage();
-        
+
             $this->book_repository->rollback();
-          
+
             $exito = false;
         }
         return ($book != null) && $exito;
     }
-    
-    
-    public function search($cadena){
-      $resultado=  $this->book_repository->buscarPorAutorOTituloPalabras($cadena);
-      return $resultado;
+
+    public function search($cadena) {
+        $resultado = $this->book_repository->buscarPorAutorOTituloPalabras($cadena);
+        return $resultado;
+    }
+
+    public function findAll() {
+        try {
+            return $this->book_repository->findAll();
+        } catch (Exception $ex) {
+            echo "Ha ocurrido una exception: " . __METHOD__ . " " . $ex->getMessage();
+            return null;
+        }
     }
 
 }

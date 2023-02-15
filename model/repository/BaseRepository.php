@@ -19,14 +19,21 @@ abstract class BaseRepository implements IBaseRepository {
     protected string $default_order_column;
 
     public function __construct() {
-        // $this->conn = new MyPDO();
+        try{
         $this->conn = ConnectionFactory::getConnection();
+        }
+        catch(Exception $ex){
+            echo "Ha ocurrido un error obteniendo la conexión: ";
+            //No mostrar esta información:
+            //.$ex->getMessage() ." <br/>". $ex->getTraceAsString();
+            exit;
+            }
     }
 
     abstract public function create($object);
 
     public function read($id) {
-        $sentencia = $conn->prepare("SELECT * FROM $this->table_name "
+        $sentencia = $this->conn->prepare("SELECT * FROM $this->table_name "
                 . "WHERE $this->pk_name = ?");
 
         $sentencia->bind_param("i", $id);
@@ -36,11 +43,46 @@ abstract class BaseRepository implements IBaseRepository {
         $resultado = $sentencia->get_result();
         $object = $resultado->fetch_object($this->class_name);
         //Puede devolver false en caso de error o null si no hay nada
-        if($object===false){
+        if ($object === false) {
             echo "Hubo un error en fetch_object";
-            $object=null;
+            $object = null;
         }
         return $object;
+    }
+
+    abstract public function update($object): bool;
+
+    public function delete($id): bool {
+
+
+
+        $sentencia = $this->conn->prepare(
+                "DELETE FROM " . $this->table_name . " WHERE " . $this->pk_name
+                . " = ?");
+
+        $sentencia->bind_param("i", $id);
+
+        // $pdostmt->debugDumpParams();
+        $sentencia->execute();
+
+        $resultado = $sentencia->get_result();
+
+        return ($resultado->num_rows() == 1);
+    }
+
+    public function findAll(): array {
+        $sentencia = $this->conn->prepare("SELECT *  FROM $this->table_name ORDER BY $this->default_order_column");
+
+        $sentencia->execute();
+
+        $resultado = $sentencia->get_result();
+        $all_array = array();
+
+        while ($object = $resultado->fetch_object($this->class_name)) {
+
+            array_push($all_array, $object);
+        }
+        return $all_array;
     }
 
     public function readConError($id) {
@@ -74,59 +116,11 @@ abstract class BaseRepository implements IBaseRepository {
         $object = $result->fetch_object($this->class_name);
 
         return $object;
-
-//        $pdostmt = $this->conn->prepare("SELECT * FROM $this->table_name "
-//                . "WHERE $this->pk_name = :id");
-//        $pdostmt->bindValue("id", $id);
-//        $pdostmt->execute();
-//
-////Llama al constructor después de establecer las propiedades. No usa los métodos setters
-//        $object = $pdostmt->fetchObject($this->class_name);
-//
-//        return $object;
-    }
-
-    abstract public function update($object): bool;
-
-//abstract public function delete($id): bool;
-
-    public function delete($id): bool {
-
-       
-
-            $sentencia = $this->conn->prepare(
-                    "DELETE FROM " . $this->table_name . " WHERE " . $this->pk_name
-                    . " = ?");
-
-            $sentencia->bind_param("i", $id);
-
-            // $pdostmt->debugDumpParams();
-            $sentencia->execute();
-            
-            $resultado = $sentencia->get_result();
-       
-
-        return ($resultado->num_rows() == 1);
-    }
-
-    public function findAll(): array {
-       $sentencia = $this->conn->prepare("SELECT *  FROM $this->table_name ORDER BY $this->default_order_column");
-
-        $sentencia->execute();
-
-        $resultado = $sentencia->get_result();
-        $all_array = array();
-
-        while ($object = $resultado->fetch_object($this->class_name)) {
-
-            array_push($all_array, $object);
-        }
-        return $all_array;
     }
 
     public function beginTransaction(): bool {
 
-        return $this->conn->begin_transaction ();
+        return $this->conn->begin_transaction();
     }
 
     public function commit(): bool {

@@ -20,11 +20,12 @@ class BookRepository extends BaseRepository implements IBookRepository {
         $this->table_name = "books";
         $this->pk_name = "book_id";
         $this->class_name = "Book";
+        $this->default_order_column="title";
     }
 
     public function getLibrosYAutoresAgrupadosFetchAll(): array {
 
-        $pdostmt = $this->conn->query('SELECT b.title,'
+         $pdostmt = $this->conn->query('SELECT b.title,'
                 . ' GROUP_CONCAT(COALESCE(a.first_name,\'\'),  COALESCE(\' \'+a.middle_name+\' \', \' \' ),    COALESCE(a.last_name, \'\') SEPARATOR \', \') as name'
                 . ' from books b '
                 . ' INNER JOIN book_authors ba ON b.book_id = ba.book_id '
@@ -33,24 +34,11 @@ class BookRepository extends BaseRepository implements IBookRepository {
 
         $array = $pdostmt->fetchAll(PDO::FETCH_ASSOC);
 
+      
+
         return $array;
     }
 
-//    function getEditores() {
-//        $pdostmt = $this->conn->query('SELECT publisher_id, name ' .
-//                ' FROM publishers ORDER BY name');
-//        $array = $pdostmt->fetchAll(PDO::FETCH_ASSOC);
-//        return $array;
-//    }
-//    function getAutores() {
-//        $pdostmt = $this->conn->query('SELECT author_id, '
-//                . 'CONCAT (COALESCE(a.first_name,\'\'), '
-//                . 'COALESCE(\' \'+a.middle_name+\' \', \' \' ),'
-//                . 'COALESCE(a.last_name, \'\') ) as author ' .
-//                ' FROM authors a ORDER BY a.first_name');
-//        $array = $pdostmt->fetchAll(PDO::FETCH_ASSOC);
-//        return $array;
-//    }
 
     public function buscarPorAutorOTitulo($cadena): array {
         $pdostmt = $this->conn->prepare(
@@ -187,14 +175,7 @@ class BookRepository extends BaseRepository implements IBookRepository {
         return ($pdostmt->rowCount() == 1);
     }
 
-//
-//    public function delete($id): bool {
-//        $pdostmt = $this->conn->prepare("DELETE FROM books WHERE book_id
-//    = :book_id");
-//        $pdostmt->bindValue("book_id", $id);
-//        $pdostmt->execute();
-//        return ($pdostmt->rowCount() == 1);
-//    }
+
 
     public function read($book_id) {
         $book = parent::read($book_id);
@@ -220,8 +201,8 @@ class BookRepository extends BaseRepository implements IBookRepository {
         $sentencia->execute();
         $resultado = $sentencia->get_result();
 
-        echo "Num rows afectadas en " . __METHOD__ . "es: " . $this->conn->affected_rows;
-        return ($this->conn->affected_rows == 1);
+       // echo "Num rows afectadas en " . __METHOD__ . "es: " . $this->conn->affected_rows;
+        return ($this->conn->affected_rows === 1);
     }
 
 }

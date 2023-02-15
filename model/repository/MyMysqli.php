@@ -21,9 +21,7 @@ class MyMySqli extends mysqli {
             die('Error de Conexión (' . $this->connect_errno . ') '
                     . $this->connect_error);
         }
-        else{
-            echo 'Éxito... ' . $this->host_info . "\n";
-        }
+     
         //Para versiones e PHP anteriores a 5.2.9 y 5.3.0.
 
 //        if (mysqli_connect_error()) {

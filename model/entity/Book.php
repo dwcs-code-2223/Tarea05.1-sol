@@ -20,6 +20,8 @@ class Book {
     public ?int $publisher_id;
     public  $published_date;
     
+    
+    
     //Si usáseis POO estricta
 //    private $autores; //array de objetos Autor
 //    

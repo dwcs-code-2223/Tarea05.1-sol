@@ -48,7 +48,7 @@ class PublisherRepository extends BaseRepository implements IPublisherRepository
 
     public function exists($name): bool {
         $sentencia = $this->conn->prepare
-                ("SELECT publisher_id FROM publishers sWHERE name LIKE ? ");
+                ("SELECT publisher_id FROM publishers WHERE name LIKE ? ");
         $sentencia->bind_param("s", $name);
         $sentencia->execute();
         $resultado = $sentencia->get_result();

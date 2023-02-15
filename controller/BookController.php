@@ -168,5 +168,12 @@ class BookController {
             }
         }
     }
+    
+    public function list(){
+             $this->view=self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'list_book';
+        $this->page_title = "Listado de libros";
+           return $this->bookServicio->findAll();
+                 
+    }
 
 }
