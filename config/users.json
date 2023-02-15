@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "email": "user1@edu.es",
+        "pwdhash": "$2y$10$21zpjzgVWLO65cnOxvY2iuF6d2ZXu2nza8QkKDIiHHQoQEGPASV4W",
+        "roles": [
+            {
+                "id": 1,
+                "name": "admin"
+            },
+            {
+                "id": 2,
+                "name": "user"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "email": "user2@edu.es",
+        "pwdhash": "$2y$10$21zpjzgVWLO65cnOxvY2iuF6d2ZXu2nza8QkKDIiHHQoQEGPASV4W",
+        "roles": [
+            {
+                "id": 2,
+                "name": "user"
+            }
+        ]
+    }
+]
