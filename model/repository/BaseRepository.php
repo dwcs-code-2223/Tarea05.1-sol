@@ -47,14 +47,15 @@ abstract class BaseRepository implements IBaseRepository {
             echo "Hubo un error en fetch_object";
             $object = null;
         }
+        $resultado->close();
+        $sentencia->close();
+        
         return $object;
     }
 
     abstract public function update($object): bool;
 
     public function delete($id): bool {
-
-
 
         $sentencia = $this->conn->prepare(
                 "DELETE FROM " . $this->table_name . " WHERE " . $this->pk_name
@@ -67,7 +68,12 @@ abstract class BaseRepository implements IBaseRepository {
 
         $resultado = $sentencia->get_result();
 
-        return ($resultado->num_rows() == 1);
+        $exito= ($resultado->num_rows() == 1);
+        
+        $sentencia->close();
+        $resultado->close();
+        
+        return $exito;
     }
 
     public function findAll(): array {
@@ -82,6 +88,9 @@ abstract class BaseRepository implements IBaseRepository {
 
             array_push($all_array, $object);
         }
+        
+        $sentencia->close();
+        $resultado->close();
         return $all_array;
     }
 
@@ -115,6 +124,7 @@ abstract class BaseRepository implements IBaseRepository {
 //Llama al constructor después de establecer las propiedades. 
         $object = $result->fetch_object($this->class_name);
 
+        $result->close();
         return $object;
     }
 

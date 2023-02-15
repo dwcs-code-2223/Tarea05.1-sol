@@ -25,14 +25,12 @@ class ConnectionFactory {
 
     public static function getConnection() {
 
-
         if (is_null(self::$connection)) {
             self::$ruta_fichero = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . DATABASE_INI_FILE;
 
             if (!$settings = parse_ini_file(self::$ruta_fichero, TRUE)) {
                 throw new Exception('Unable to open ' . self::$ruta_fichero . '.');
             }
-
 
             self::$connection = new MyMySqli( 
                     $settings['database']['host'],                    

@@ -41,10 +41,13 @@ BaseRepository implements IAuthorRepository {
         //Establecemos el id como parte del objeto
         if ($author_id !== 0) {
             $author->setAuthor_id($author_id);
-            return $author;
         } else {
-            return null;
+            $author = null;
         }
+
+        $sentencia->close();
+
+        return $author;
     }
 
     public function update($object): bool {
@@ -66,8 +69,9 @@ BaseRepository implements IAuthorRepository {
 
             array_push($authors_array, $object);
         }
-        //   $pdostmt->debugDumpParams();
-        //Se añadió un nuevo atributo en Author.php: $completeName
+
+        $sentencia->close();
+        $resultado->close();
 
         return $authors_array;
     }

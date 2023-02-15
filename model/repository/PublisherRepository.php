@@ -36,10 +36,12 @@ class PublisherRepository extends BaseRepository implements IPublisherRepository
         //Establecemos el id como parte del objeto
         if ($publisher_Id !== 0) {
             $publisher->setPublisher_id($publisher_Id);
-            return $publisher;
+           
         } else {
-            return null;
-        }
+           $publisher=null;
+        }        
+        $sentencia->close();
+        return $publisher;
     }
 
     public function update($object): bool {
@@ -56,7 +58,11 @@ class PublisherRepository extends BaseRepository implements IPublisherRepository
         if (($object = $resultado->fetch_assoc()) === false) {
             echo "Falló fetch_object: ";
         }
-        return (($object !== null) && ($object !== false) && (count($object) > 0));
+        $exito= (($object !== null) && ($object !== false) && (count($object) > 0));
+        
+        $sentencia->close();
+        $resultado->close();
+        return $exito;
     }
 
 }
