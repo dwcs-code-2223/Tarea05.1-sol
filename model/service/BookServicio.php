@@ -41,11 +41,16 @@ class BookServicio {
     }
 
     public function addAuthor(Author $author): Author {
-
-        //TO DO 
-        //Comprobar que no exista ya un autor con los mismos datos
-        //Como en Publisher
-        return $this->author_repository->create($author);
+        try {
+            //TO DO 
+            //Comprobar que no exista ya un autor con los mismos datos
+            //Como en Publisher
+            $author = $this->author_repository->create($author);
+        } catch (\Exception $ex) {
+            echo "Ha ocurrido una excepción: " . __METHOD__ . " " . $ex->getMessage() . "<br/>" . $ex->getTraceAsString();
+            $author = null;
+        }
+        return $author;
     }
 
     public function getPublishers() {
