@@ -68,7 +68,7 @@ abstract class BaseRepository implements IBaseRepository {
 
         $resultado = $sentencia->get_result();
 
-        $exito= ($resultado->num_rows() == 1);
+        $exito= ($resultado->num_rows() ===1);
         
         $sentencia->close();
         $resultado->close();
