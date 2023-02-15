@@ -70,7 +70,6 @@ class BookRepository extends BaseRepository implements IBookRepository {
         //https://www.php.net/manual/en/language.types.callable.php
         $palabrasArray = array_filter($palabrasArray, "filtrarEspacios");
 
-        
         $num_repeticiones = count($palabrasArray);
 
         $filtro_resultado_name = $this->prepararFiltroComparacionString("T", "name", $num_repeticiones, " OR ");
@@ -87,25 +86,23 @@ class BookRepository extends BaseRepository implements IBookRepository {
 
         $query .= " WHERE $filtro_resultado_name OR $filtro_resultado_title ";
 
-        
-       // echo "La query es: $query <br/> ";
+        // echo "La query es: $query <br/> ";
         $sentencia = $this->conn->prepare($query);
-       
-        
+
         for ($index = 0; $index < count($palabrasArray); $index++) {
-            $palabrasArray[$index]='%'. $palabrasArray[$index].'%';
+            $palabrasArray[$index] = '%' . $palabrasArray[$index] . '%';
         }
-            
+
 //        print_r($palabrasArray);
 //        echo" <br/>";       
-       
-        
-        $arraydoblepalabras = array_merge($palabrasArray, $palabrasArray);
-       // print_r($arraydoblepalabras);
-        $sentencia->execute($arraydoblepalabras);     
 
-        $resultado= $sentencia->get_result();
-        
+
+        $arraydoblepalabras = array_merge($palabrasArray, $palabrasArray);
+        // print_r($arraydoblepalabras);
+        $sentencia->execute($arraydoblepalabras);
+
+        $resultado = $sentencia->get_result();
+
         $array = $resultado->fetch_all(MYSQLI_ASSOC);
         return $array;
     }
@@ -119,13 +116,13 @@ class BookRepository extends BaseRepository implements IBookRepository {
      * @param type $operadorBool <p> operador AND u OR</p>
      * @return type
      */
-    private function prepararFiltroComparacionString($aliasTabla, $nombre_columna,  $numRepeticiones, $operadorBool) {
+    private function prepararFiltroComparacionString($aliasTabla, $nombre_columna, $numRepeticiones, $operadorBool) {
         $query_plantilla_name = "$aliasTabla.$nombre_columna LIKE ";
 
         $array_query_name = array();
         for ($i = 0; $i < $numRepeticiones; $i++) {
-           // $param = ":" . $plantilla_param . $i;
-            $param="?";
+            // $param = ":" . $plantilla_param . $i;
+            $param = "?";
             $query_name = $query_plantilla_name . $param;
             array_push($array_query_name, $query_name);
         }
@@ -198,6 +195,25 @@ class BookRepository extends BaseRepository implements IBookRepository {
 
         // echo "Num rows afectadas en " . __METHOD__ . "es: " . $this->conn->affected_rows;
         return ($this->conn->affected_rows === 1);
+    }
+
+    public function listAll():array {
+        $query = 'SELECT T.* FROM ('
+                . ' SELECT b.book_id ,  b.title ,  b.isbn ,  b.published_date ,  b.publisher_id  , p.name as publisher_name, '
+                . ' GROUP_CONCAT(COALESCE(a.first_name,\'\'), \' \', COALESCE(a.middle_name, \'\' ), \' \',   COALESCE(a.last_name, \'\') SEPARATOR \', \') as authors_names'
+                . ' from books b '
+                . ' LEFT JOIN book_authors ba ON b.book_id = ba.book_id '
+                . ' LEFT JOIN authors a on ba.author_id=a.author_id '
+                . ' LEFT JOIN publishers p on p.publisher_id=b.publisher_id'
+                . ' GROUP BY b.title '
+                . ') as T  ORDER BY T.title';
+
+        $sentencia = $this->conn->prepare($query);
+        $sentencia->execute();
+
+        $resultado = $sentencia->get_result();
+        $array = $resultado->fetch_all(MYSQLI_ASSOC);
+        return $array;
     }
 
 }

@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-12 text-right">
-      
+
     </div>
     <?php if (count($dataToView["data"]) > 0) : ?>
 
@@ -19,11 +19,11 @@
             <tbody>
                 <?php foreach ($dataToView["data"] as $book) { ?>
                     <tr>
-                        <td><?= $book->getTitle() ?></td>
-                        <td> Autores to do </td>
-                        <td><?=$book->getPublisher_id()?></td>
-                        <td><?=$book->getIsbn()?></td>
-                          <td><?=$book->getPublished_date()?></td>
+                        <td><?= $book["title"] ?></td>
+                        <td><?= $book["authors_names"] ?></td>
+                        <td><?= $book["publisher_name"] ?></td>
+                        <td><?= $book["isbn"] ?></td>
+                        <td><?= $book["published_date"] ?></td>
                     </tr>
                     <?php
                 }
@@ -31,9 +31,10 @@
             </tbody>
         </table>
     <?php endif;
-    
-    if(count($dataToView["data"])===0):?>
-        
+
+    if (count($dataToView["data"]) === 0):
+        ?>
+
         <div class="alert alert-info">
             Actualmente no existen libros.
         </div>

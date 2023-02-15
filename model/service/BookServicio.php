@@ -101,7 +101,7 @@ class BookServicio {
 
     public function findAll() {
         try {
-            return $this->book_repository->findAll();
+            return $this->book_repository->listAll();
         } catch (Exception $ex) {
             echo "Ha ocurrido una exception: " . __METHOD__ . " " . $ex->getMessage();
             return null;
