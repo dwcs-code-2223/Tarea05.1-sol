@@ -21,8 +21,16 @@ class Book {
     public  $published_date;
     
     
-    
-    //Si usáseis POO estricta
+    private array $author_ids;
+    public function getAuthor_ids(): array {
+        return $this->author_ids;
+    }
+
+    public function setAuthor_ids(array $author_ids): void {
+        $this->author_ids = $author_ids;
+    }
+
+        //Si usáseis POO estricta
 //    private $autores; //array de objetos Autor
 //    
 //   

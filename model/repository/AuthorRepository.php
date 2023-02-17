@@ -76,4 +76,21 @@ BaseRepository implements IAuthorRepository {
         return $authors_array;
     }
 
+    public function getAuthorIdsByBookId($book_id):array {
+        $sentencia = $this->conn->prepare("SELECT author_id FROM book_authors WHERE book_id = ?");
+        $sentencia->bind_param("i", $book_id);
+
+        $sentencia->execute();
+
+        $resultado = $sentencia->get_result();
+        
+        $author_ids_array= array();
+        while ($fila = $resultado->fetch_row()){
+
+            array_push($author_ids_array, $fila[0]);
+        }
+
+        return $author_ids_array;
+    }
+
 }

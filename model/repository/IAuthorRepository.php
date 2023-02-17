@@ -10,5 +10,5 @@
  * @author mfernandez
  */
 interface IAuthorRepository extends IBaseRepository{
-    //put your code here
+   public function getAuthorIdsByBookId($book_id):array;
 }

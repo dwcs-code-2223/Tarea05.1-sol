@@ -13,6 +13,7 @@
                     <th scope="col">Editorial</th>
                     <th scope="col">ISBN</th>
                     <th scope="col">Fecha de publicación</th>
+                    <th scope="col">Update</th>
 
                 </tr>
             </thead>
@@ -24,6 +25,12 @@
                         <td><?= $book["publisher_name"] ?></td>
                         <td><?= $book["isbn"] ?></td>
                         <td><?= $book["published_date"] ?></td>
+                        <td>
+                            <a href="FrontController.php?controller=Book&action=edit&id=<?php echo $book["book_id"] ?>" class="btn btn-primary">Editar</a>
+                            <form action="FrontController.php?controller=Book&action=edit&book_id=<?=$book["book_id"]?>" method="get">
+                                
+                                <input type="submit" value="Modificar"  class="btn btn-primary">
+                            </form>
                     </tr>
                     <?php
                 }

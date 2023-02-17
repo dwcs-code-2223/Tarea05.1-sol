@@ -175,9 +175,11 @@ class BookRepository extends BaseRepository implements IBookRepository {
             //Las propiedades se establecen como cadenas de texto
             //Lee un string inicialmente y lo convertimos a DateTimeInmutable
             //Ojo, que la propiedad published_date de Book no puede ser tipada para que no dé problemas
-            $date = Util::stringToDateTimeISO8601($book->getPublished_date());
-            if ($date != null) {
-                $book->setPublished_date($date);
+            if ($book->getPublished_date() != null) {
+                $date = Util::stringToDateTimeISO8601($book->getPublished_date());
+                if ($date != null) {
+                    $book->setPublished_date($date);
+                }
             }
             return $book;
         } else {
@@ -197,7 +199,7 @@ class BookRepository extends BaseRepository implements IBookRepository {
         return ($this->conn->affected_rows === 1);
     }
 
-    public function listAll():array {
+    public function listAll(): array {
         $query = 'SELECT T.* FROM ('
                 . ' SELECT b.book_id ,  b.title ,  b.isbn ,  b.published_date ,  b.publisher_id  , p.name as publisher_name, '
                 . ' GROUP_CONCAT(COALESCE(a.first_name,\'\'), \' \', COALESCE(a.middle_name, \'\' ), \' \',   COALESCE(a.last_name, \'\') SEPARATOR \', \') as authors_names'

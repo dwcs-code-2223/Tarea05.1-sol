@@ -107,5 +107,16 @@ class BookServicio {
             return null;
         }
     }
+    
+    public function getBookById($book_id){
+        $book = $this->book_repository->read($book_id);
+        if($book!=null){
+            //Get authors
+            $array_author_ids = $this->author_repository->getAuthorIdsByBookId($book_id);
+            $book->setAuthor_ids($array_author_ids);
+            print_r($book->getAuthor_ids());
+        }
+        return $book;
+    }
 
 }
