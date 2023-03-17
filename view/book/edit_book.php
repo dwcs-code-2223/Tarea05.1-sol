@@ -1,12 +1,13 @@
 <?php
-$id = $title = $isbn = $fecha = $editorial = "";
+ $title = $isbn = $fecha = $editorial = "";
 $book_author_ids=null;
+$book_id=null;
 
 if (isset($dataToView["data"])) {
     $book = $dataToView["data"];
 
     if ($book->getBook_id() !== null) {
-        $id = $book->getBook_id();
+        $book_id = $book->getBook_id();
     }
     if ($book->getTitle() !== null) {
         $title = $book->getTitle();
@@ -30,7 +31,8 @@ if (isset($dataToView["data"])) {
 
 
 
-<form class='form-control ' method="post" action="FrontController.php?controller=Book&action=edit>
+<form class='form-control ' method="post" action="FrontController.php?controller=Book&action=save">
+    <input type="hidden" value="<?=$book_id?>" name="book_id"/>
     <div>
         <label for="title" class="form-label col-3">Título</label>
         <input name="title" type="text" class="form-control col-9" id="title" pattern="^(?!\s*$).+"
@@ -117,7 +119,8 @@ if (isset($dataToView["data"])) :
 
     </div>
     <div class="row d-flex justify-content-center"> 
-        <button type="submit" class="btn btn-primary my-3 col-3">Crear libro</button>
+        <button type="submit" class="btn btn-primary my-3 col-3">Guardar</button>
+        <a href="FrontController.php?controller=Book&action=list" class="btn btn-secondary mx-2 my-3 col-3">Volver</a>
     </div>
 
 </form>
@@ -125,12 +128,12 @@ if (isset($dataToView["data"])) :
 <?php if (isset($dataToView["data"]) && ($dataToView["data"]->getStatus() === Util::OPERATION_OK)): ?>
 
     <div class="alert alert-success" role="alert" >
-        El libro se ha creado correctamente
+        El libro se ha guardado correctamente
     </div>
 
 <?php elseif (isset($dataToView["data"]) && ($dataToView["data"]->getStatus() === Util::OPERATION_NOK)): ?>
     <div class="alert alert-danger" role="alert">
-        Ha ocurrido un error y no se ha podido crear el libro.
+        Ha ocurrido un error y no se ha podido guardar el libro.
         <br/>
 
     <?php

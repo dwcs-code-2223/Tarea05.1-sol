@@ -55,9 +55,7 @@ class PublisherRepository extends BaseRepository implements IPublisherRepository
         $sentencia->execute();
         $resultado = $sentencia->get_result();
         //Devuelve array|null|false
-        if (($object = $resultado->fetch_assoc()) === false) {
-            echo "Falló fetch_object: ";
-        }
+       
         $exito= (($object !== null) && ($object !== false) && (count($object) > 0));
         
         $sentencia->close();

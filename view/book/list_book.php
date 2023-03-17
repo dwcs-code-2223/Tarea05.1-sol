@@ -27,10 +27,11 @@
                         <td><?= $book["published_date"] ?></td>
                         <td>
                             <a href="FrontController.php?controller=Book&action=edit&id=<?php echo $book["book_id"] ?>" class="btn btn-primary">Editar</a>
-                            <form action="FrontController.php?controller=Book&action=edit&book_id=<?=$book["book_id"]?>" method="get">
-                                
-                                <input type="submit" value="Modificar"  class="btn btn-primary">
-                            </form>
+                        </td>
+                        <td>
+                              <a href="FrontController.php?controller=Book&action=confirmDelete&id=<?php echo $book["book_id"] ?>" class="btn btn-danger">Eliminar</a>
+                        </td>
+
                     </tr>
                     <?php
                 }

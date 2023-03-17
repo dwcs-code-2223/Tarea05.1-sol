@@ -14,14 +14,14 @@ class Book {
     
     use AddBookViewData;
     
-    public int $book_id;
-    public string $title;
-    public ?string $isbn;
-    public ?int $publisher_id;
+    public ?int $book_id;
+    public string $title="";
+    public ?string $isbn="";
+    public ?int $publisher_id=null;
     public  $published_date;
     
     
-    private array $author_ids;
+    private array $author_ids =[];
     public function getAuthor_ids(): array {
         return $this->author_ids;
     }
@@ -44,7 +44,7 @@ class Book {
 //    }
 
              
-    public function getBook_id(): int {
+    public function getBook_id(): ?int {
         return $this->book_id;
     }
 
@@ -65,7 +65,7 @@ class Book {
     }
 
 
-    public function setBook_id(int $book_id): void {
+    public function setBook_id(?int $book_id): void {
         $this->book_id = $book_id;
     }
 

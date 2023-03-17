@@ -87,81 +87,88 @@ class BookController {
         }
     }
 
-    public function addBook() {
-        $this->page_title = 'Nuevo libro';
-        $this->view = self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'new_book';
-
-        $publishers = $this->bookServicio->getPublishers();
-        $authors = $this->bookServicio->getAuthors();
-
-        $book = new Book();
-        $book->setAll_publishers($publishers);
-        $book->setAll_authors($authors);
-
-        if (isset($_POST["title"])) {
-
-
-            $pdate = null;
-            $isbn = null;
-            $pub_Id = null;
-            $authors = null;
-            $title = "";
-
-            if (Util::isNotEmpty($_POST["title"])) {
-                $title = $_POST["title"];
-            }
-
-            if (isset($_POST["isbn"]) && Util::isNotEmpty($_POST["isbn"])) {
-                $isbn = $_POST["isbn"];
-            }
-
-            if (isset($_POST["pdate"]) && Util::isNotEmpty($_POST["pdate"])) {
-                $pdate = $_POST["pdate"];
-                $pdate_converted = DateTimeImmutable::createFromFormat("Y-m-d", $pdate);
-                if ($pdate_converted !== false) {
-                    $pdate = $pdate_converted;
-                }
-            }
-
-            if (isset($_POST["publisher"]) && Util::isNotEmpty($_POST["publisher"])) {
-                $pub_Id = $_POST["publisher"];
-            }
-
-
-            $book->setTitle($title);
-            $book->setIsbn($isbn);
-            $book->setPublished_date($pdate);
-            $book->setPublisher_id($pub_Id);
-//Si fuese una relación POO de Book y array de Author
-//            if (isset($_POST["$authors"]) && count($_POST["$authors"]) > 0) {
-//                $authors = $_POST["$authors"];
-//                $array_authors = array();
-//                foreach ($authors as $author_id):
-//                    $author = new Author();
-//                    $author->setAuthor_id($author_id);
-//                    array_push($array_authors, $author);
-//                endforeach;
-//                $book->setAutores($array_authors);
+    //En desuso con mysqli
+    //
+//    public function addBook() {
+//        $this->page_title = 'Nuevo libro';
+//        $this->view = self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'edit_book';
+//
+//        $publishers = $this->bookServicio->getPublishers();
+//        $authors = $this->bookServicio->getAuthors();
+//
+//        $book = new Book();
+//        $book->setAll_publishers($publishers);
+//        $book->setAll_authors($authors);
+//
+//        if (isset($_POST["title"])) {
+//
+//
+//            $pdate = null;
+//            $isbn = null;
+//            $pub_Id = null;
+//            $authors = null;
+//            $title = "";
+//
+//            if (Util::isNotEmpty($_POST["title"])) {
+//                $title = $_POST["title"];
 //            }
+//
+//            if (isset($_POST["isbn"]) && Util::isNotEmpty($_POST["isbn"])) {
+//                $isbn = $_POST["isbn"];
+//            }
+//
+//            if (isset($_POST["pdate"]) && Util::isNotEmpty($_POST["pdate"])) {
+//                $pdate = $_POST["pdate"];
+//                $pdate_converted = DateTimeImmutable::createFromFormat("Y-m-d", $pdate);
+//                if ($pdate_converted !== false) {
+//                    $pdate = $pdate_converted;
+//                }
+//            }
+//
+//            if (isset($_POST["publisher"]) && Util::isNotEmpty($_POST["publisher"])) {
+//                $pub_Id = $_POST["publisher"];
+//            }
+//
+//
+//            $book->setTitle($title);
+//            $book->setIsbn($isbn);
+//            $book->setPublished_date($pdate);
+//            $book->setPublisher_id($pub_Id);
+////Si fuese una relación POO de Book y array de Author
+////            if (isset($_POST["$authors"]) && count($_POST["$authors"]) > 0) {
+////                $authors = $_POST["$authors"];
+////                $array_authors = array();
+////                foreach ($authors as $author_id):
+////                    $author = new Author();
+////                    $author->setAuthor_id($author_id);
+////                    array_push($array_authors, $author);
+////                endforeach;
+////                $book->setAutores($array_authors);
+////            }
+//
+//            $exito = $this->bookServicio->addBook($book, $_POST["authors"]);
+//            if ($exito) {
+//                $book->setStatus(Util::OPERATION_OK);
+//            } else {
+//                $book->setStatus(Util::OPERATION_NOK);
+//            }
+//        } else {
+//            $book->setStatus(Util::NO_OPERATION);
+//        }
+//
+//        return $book;
+//    }
 
-            $exito = $this->bookServicio->addBook($book, $_POST["authors"]);
-            if ($exito) {
-                $book->setStatus(Util::OPERATION_OK);
-            } else {
-                $book->setStatus(Util::OPERATION_NOK);
-            }
+    public function save() {
+
+        if (isset($_POST["book_id"]) && Util::isNotEmpty($_POST["book_id"])) {
+            $book_id = $_POST["book_id"];
         } else {
-            $book->setStatus(Util::NO_OPERATION);
+            $book_id = null;
         }
+        $this->page_title = (($book_id != null) ? 'Modificar libro' : 'Nuevo libro');
 
-        return $book;
-    }
-    
-    
-       public function save($book_id=null) {
-        $this->page_title = (($book_id!=null)?'Modificar libro': 'Nuevo libro');
-        
-        $this->view = self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'new_book';
+        $this->view = self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'edit_book';
 
         $publishers = $this->bookServicio->getPublishers();
         $authors = $this->bookServicio->getAuthors();
@@ -204,15 +211,17 @@ class BookController {
             $book->setIsbn($isbn);
             $book->setPublished_date($pdate);
             $book->setPublisher_id($pub_Id);
-            
-            if($book_id!=null){
+
+            //puede ser null en creación
                 $book->setBook_id($book_id);
-            }
+            
 //TO DO
 
-            $exito = $this->bookServicio->addBook($book, $_POST["authors"]);
+            $exito = $this->bookServicio->save($book, $_POST["authors"]);
             if ($exito) {
                 $book->setStatus(Util::OPERATION_OK);
+                //actualizamos los autores
+                $book->setAuthor_ids($_POST["authors"]);
             } else {
                 $book->setStatus(Util::OPERATION_NOK);
             }
@@ -242,15 +251,14 @@ class BookController {
     }
 
     public function edit() {
-        echo "BookController";
-        $this->page_title = 'Nuevo libro';
-        $this->view = self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'new_book';
+     
+      
+        $this->view = self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'edit_book';
 
         $publishers = $this->bookServicio->getPublishers();
         $authors = $this->bookServicio->getAuthors();
 
         $book = new Book();
-      
 
         if (isset($_GET["id"])) {
 
@@ -258,11 +266,32 @@ class BookController {
             if (Util::isNotEmpty($book_id)) {
                 $book = $this->bookServicio->getBookById($book_id);
             }
+            $this->page_title = 'Modificar libro';
+        }
+        else{
+            $book->setBook_id(null);
+            $this->page_title="Crear libro";
         }
         //Se muestran en creación y edición
-          $book->setAll_publishers($publishers);
+        $book->setAll_publishers($publishers);
         $book->setAll_authors($authors);
         return $book;
+    }
+
+    public function confirmDelete() {
+        $this->page_title = 'Eliminar libro';
+        $this->view = self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'confirm_delete_book';
+        return $this->bookServicio->getBookById($_GET["id"]);
+    }
+
+    /* Delete */
+
+    public function delete(): bool {
+        $this->page_title = 'Listado de libros';
+        $this->view = self::VIEW_FOLDER . DIRECTORY_SEPARATOR . 'delete_book';
+        $exito = $this->bookServicio->deleteBookById($_POST["id"]);
+
+        return $exito;
     }
 
 }

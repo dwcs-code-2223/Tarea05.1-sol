@@ -63,15 +63,15 @@ abstract class BaseRepository implements IBaseRepository {
 
         $sentencia->bind_param("i", $id);
 
-        // $pdostmt->debugDumpParams();
+      
         $sentencia->execute();
 
-        $resultado = $sentencia->get_result();
+        $sentencia->get_result(); //Devuelve false para consultas exitosas de tipo DELETE o UPDATE
 
-        $exito= ($resultado->num_rows ===1);
+        $exito= ($sentencia->num_rows ===1);
         
         $sentencia->close();
-        $resultado->close();
+        
         
         return $exito;
     }

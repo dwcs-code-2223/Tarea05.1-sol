@@ -61,6 +61,10 @@ class BookServicio {
         return $this->author_repository->findAll();
     }
 
+    public function editBook(Book $book) {
+        
+    }
+
     public function addBook(Book $book, $authors) {
         $exito = true;
 
@@ -94,6 +98,63 @@ class BookServicio {
         return ($book != null) && $exito;
     }
 
+    public function save(Book $book, $authors) {
+        $exito = true;
+
+        try {
+            //comenzamos transaction
+            $this->book_repository->beginTransaction();
+
+            //For debug only 
+            //$this->book_repository->delete(99);
+            $book_id = $book->getBook_id();
+            if ($book_id == null) {
+
+                $book = $this->book_repository->create($book);
+
+                if (isset($authors) && count($authors) > 0):
+                    foreach ($authors as $author_id):
+                        $exito = $exito && $this->book_repository->addAuthorToBook($book->getBook_id(), $author_id);
+                        if (!$exito):
+                            break;
+                        endif;
+                    endforeach;
+                endif;
+            } else {
+                $exito = $this->book_repository->update($book);
+
+                $old_authors = $this->author_repository->getAuthorIdsByBookId($book->getBook_id());
+
+                $los_nuevos = array_diff($authors, $old_authors);
+                $los_que_hay_que_borrar = array_diff($old_authors, $authors);
+
+                foreach ($los_nuevos as $author_id) {
+                    if ($author_id !== "") {
+                        $exito = $exito && $this->book_repository->addAuthorToBook($book->getBook_id(), $author_id);
+                    }
+                }
+
+                foreach ($los_que_hay_que_borrar as $author_id) {
+                    $exito = $exito && $this->book_repository->removeAuthorBook($book->getBook_id(), $author_id);
+                }
+            }
+
+            //confirmamos la transaction
+            if ($exito) {
+                $this->book_repository->commit();
+            } else {
+                $this->book_repository->rollback();
+            }
+        } catch (Exception $ex) {
+            echo "Ha ocurrido una exception: <br/> " . $ex->getMessage();
+
+            $this->book_repository->rollback();
+
+            $exito = false;
+        }
+        return ($book != null) && $exito;
+    }
+
     public function search($cadena) {
         $resultado = $this->book_repository->buscarPorAutorOTituloPalabras($cadena);
         return $resultado;
@@ -107,16 +168,43 @@ class BookServicio {
             return null;
         }
     }
-    
-    public function getBookById($book_id){
+
+    public function getBookById($book_id) {
         $book = $this->book_repository->read($book_id);
-        if($book!=null){
+        if ($book != null) {
             //Get authors
             $array_author_ids = $this->author_repository->getAuthorIdsByBookId($book_id);
             $book->setAuthor_ids($array_author_ids);
             print_r($book->getAuthor_ids());
         }
         return $book;
+    }
+
+    public function deleteBookById($id) {
+        $exito = true;
+
+        try {
+            $author_ids = $this->author_repository->getAuthorIdsByBookId($id);
+
+            $this->book_repository->beginTransaction();
+
+            foreach ($author_ids as $author_id) {
+                $exito = $exito && $this->book_repository->removeAuthorBook($id, $author_id);
+            }
+
+            $exito = $exito && $this->book_repository->delete($id);
+
+            $this->book_repository->commit();
+        } catch (Exception $ex) {
+            echo "Ha ocurrido una exception: <br/> " . $ex->getMessage();
+
+            $this->book_repository->rollback();
+
+            $exito = false;
+        }
+
+
+        return $exito;
     }
 
 }

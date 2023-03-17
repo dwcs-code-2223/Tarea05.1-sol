@@ -155,18 +155,28 @@ class BookRepository extends BaseRepository implements IBookRepository {
     }
 
     public function update($book): bool {
-        $pdostmt = $this->conn->prepare("UPDATE books"
-                . " SET title = :newTitle, isbn = :newIsbn, published_date = :newDate, publisher_id =:newPublisher_id "
-                . "WHERE book_id = :book_id");
-        $pdostmt->bindValue("book_id", $book->getBook_id());
-        $pdostmt->bindValue("newTitle", $book->getTitle());
-        $pdostmt->bindValue("newIsbn", $book->getIsbn());
-        $pdostmt->bindValue("newDate", ($book->getPublished_date() != null) ? $book->getPublished_date()->format("Y-m-d") : null);
-        $pdostmt->bindValue("newPublisher_id", $book->getPublisher_id());
+        $sentencia = $this->conn->prepare("UPDATE books"
+                . " SET title = ?, isbn =?, published_date = ?, publisher_id =? "
+                . "WHERE book_id = ?");
+       
+        $title = $book->getTitle();
+        $isbn = $book->getIsbn();
+        $date= $pdate =($book->getPublished_date() != null) ? $book->getPublished_date()->format("Y-m-d") : null;
+        $pub_id =  $book->getPublisher_id();
+        $book_id=  $book->getBook_id();
+                
+        $sentencia->bind_param("sssii", $title, $isbn,$date  ,$pub_id, $book_id);
+        
 
-        $pdostmt->execute();
+         $exito=$sentencia->execute();
+       
 
-        return ($pdostmt->rowCount() == 1);
+      
+        
+        $sentencia->close();
+      
+
+        return ($exito);
     }
 
     public function read($book_id) {
@@ -191,6 +201,18 @@ class BookRepository extends BaseRepository implements IBookRepository {
         $sentencia = $this->conn->prepare("INSERT INTO book_authors(author_id, book_id) VALUES (?, ?)");
 
         $sentencia->bind_param("ii", $author_id, $book_id);
+
+        $sentencia->execute();
+        $resultado = $sentencia->get_result();
+
+        // echo "Num rows afectadas en " . __METHOD__ . "es: " . $this->conn->affected_rows;
+        return ($this->conn->affected_rows === 1);
+    }
+    
+     public function removeAuthorBook($book_id, $author_id): bool {
+        $sentencia = $this->conn->prepare("DELETE FROM book_authors WHERE book_id = ? AND author_id = ?");
+
+        $sentencia->bind_param("ii",  $book_id, $author_id);
 
         $sentencia->execute();
         $resultado = $sentencia->get_result();
