@@ -25,7 +25,7 @@ if (isset($dataToView["data"])) {
     }
 
     $book_author_ids = $book->getAuthor_ids();
-    print_r($book_author_ids);
+    //print_r($book_author_ids);
 }
 ?>
 
@@ -96,7 +96,7 @@ if (isset($dataToView["data"])) :
                     if (count($authors) > 0):
                         foreach ($authors as $auth) :
                             
-                     print_r($book_author_ids);
+                    // print_r($book_author_ids);
                             
                             $selected = (in_array($auth->getAuthor_id(), $book_author_ids)) ? " selected " : "";
                          
@@ -104,7 +104,7 @@ if (isset($dataToView["data"])) :
                             <option value="<?= $auth->getAuthor_id() ?>" <?=$selected?> ><?= $auth->getCompleteName() ?></option>
                           
                             <?php
-                                 echo "selected:$selected";
+                                 //echo "selected:$selected";
                         endforeach;
                     endif;
                 endif;
