@@ -17,6 +17,7 @@ interface IBookRepository extends IBaseRepository {
         public function buscarPorAutorOTituloPalabras($cadena):array;
         public function addAuthorToBook($book_id, $author_id): bool;
         public function listAll():array;
+        public function removeBookAuthorsAtOnce(int $book_id, array $author_ids): bool;
         
         
 

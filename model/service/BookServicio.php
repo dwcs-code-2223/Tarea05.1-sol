@@ -134,9 +134,10 @@ class BookServicio {
                     }
                 }
 
-                foreach ($los_que_hay_que_borrar as $author_id) {
-                    $exito = $exito && $this->book_repository->removeAuthorBook($book->getBook_id(), $author_id);
-                }
+//                foreach ($los_que_hay_que_borrar as $author_id) {
+//                    $exito = $exito && $this->book_repository->removeAuthorBook($book->getBook_id(), $author_id);
+//                }
+                $exito = $exito && $this->book_repository->removeBookAuthorsAtOnce($book->getBook_id(), $los_que_hay_que_borrar);
             }
 
             //confirmamos la transaction
@@ -188,9 +189,10 @@ class BookServicio {
 
             $this->book_repository->beginTransaction();
 
-            foreach ($author_ids as $author_id) {
-                $exito = $exito && $this->book_repository->removeAuthorBook($id, $author_id);
-            }
+//            foreach ($author_ids as $author_id) {
+//                $exito = $exito && $this->book_repository->removeAuthorBook($id, $author_id);
+//            }
+             $exito = $exito && $this->book_repository->removeBookAuthorsAtOnce($id, $author_ids);
 
             $exito = $exito && $this->book_repository->delete($id);
 

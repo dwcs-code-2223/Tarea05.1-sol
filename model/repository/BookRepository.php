@@ -224,6 +224,25 @@ class BookRepository extends BaseRepository implements IBookRepository {
 
         return $exito;
     }
+    
+    public function removeBookAuthorsAtOnce(int $book_id, array $author_ids): bool {
+       $array_book_id_author_ids = array();
+       array_push($array_book_id_author_ids, $book_id);
+        $parameters = str_repeat('?,', count($author_ids)-1 ) . '?';
+        $sentencia = $this->conn->prepare("DELETE FROM book_authors WHERE book_id = ? AND author_id IN ($parameters)");
+
+       // $sentencia->bind_param("ii", $book_id, $author_id);
+
+        //Añadimos book_id al array
+       $array_book_id_author_ids= array_merge($array_book_id_author_ids, $author_ids);
+        $sentencia->execute($array_book_id_author_ids);
+        $exito = ($sentencia->affected_rows === count($author_ids));
+
+        $sentencia->close();
+
+        return $exito;
+    }
+
 
     public function listAll(): array {
         $query = 'SELECT T.* FROM ('
