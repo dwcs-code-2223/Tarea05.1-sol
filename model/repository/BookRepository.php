@@ -104,6 +104,9 @@ class BookRepository extends BaseRepository implements IBookRepository {
         $resultado = $sentencia->get_result();
 
         $array = $resultado->fetch_all(MYSQLI_ASSOC);
+        
+        $resultado->close();
+        $sentencia->close();
         return $array;
     }
 
@@ -148,33 +151,31 @@ class BookRepository extends BaseRepository implements IBookRepository {
         //Establecemos el id como parte del objeto
         if ($book_id !== 0) {
             $book->setBook_id($book_id);
-            return $book;
+            
         } else {
-            return null;
+           $book=null;
         }
+        
+        $sentencia->close();
+        return $book;
     }
 
     public function update($book): bool {
         $sentencia = $this->conn->prepare("UPDATE books"
                 . " SET title = ?, isbn =?, published_date = ?, publisher_id =? "
                 . "WHERE book_id = ?");
-       
+
         $title = $book->getTitle();
         $isbn = $book->getIsbn();
-        $date= $pdate =($book->getPublished_date() != null) ? $book->getPublished_date()->format("Y-m-d") : null;
-        $pub_id =  $book->getPublisher_id();
-        $book_id=  $book->getBook_id();
-                
-        $sentencia->bind_param("sssii", $title, $isbn,$date  ,$pub_id, $book_id);
-        
+        $date = $pdate = ($book->getPublished_date() != null) ? $book->getPublished_date()->format("Y-m-d") : null;
+        $pub_id = $book->getPublisher_id();
+        $book_id = $book->getBook_id();
 
-         $exito=$sentencia->execute();
-       
+        $sentencia->bind_param("sssii", $title, $isbn, $date, $pub_id, $book_id);
 
-      
-        
+        $exito = $sentencia->execute();
+
         $sentencia->close();
-      
 
         return ($exito);
     }
@@ -203,22 +204,25 @@ class BookRepository extends BaseRepository implements IBookRepository {
         $sentencia->bind_param("ii", $author_id, $book_id);
 
         $sentencia->execute();
-        $resultado = $sentencia->get_result();
 
-        // echo "Num rows afectadas en " . __METHOD__ . "es: " . $this->conn->affected_rows;
-        return ($this->conn->affected_rows === 1);
+        $exito = ($sentencia->affected_rows === 1);
+
+        $sentencia->close();
+
+        return $exito;
     }
-    
-     public function removeAuthorBook($book_id, $author_id): bool {
+
+    public function removeAuthorBook($book_id, $author_id): bool {
         $sentencia = $this->conn->prepare("DELETE FROM book_authors WHERE book_id = ? AND author_id = ?");
 
-        $sentencia->bind_param("ii",  $book_id, $author_id);
+        $sentencia->bind_param("ii", $book_id, $author_id);
 
         $sentencia->execute();
-        $resultado = $sentencia->get_result();
+        $exito = ($sentencia->affected_rows === 1);
 
-        // echo "Num rows afectadas en " . __METHOD__ . "es: " . $this->conn->affected_rows;
-        return ($this->conn->affected_rows === 1);
+        $sentencia->close();
+
+        return $exito;
     }
 
     public function listAll(): array {
@@ -237,6 +241,9 @@ class BookRepository extends BaseRepository implements IBookRepository {
 
         $resultado = $sentencia->get_result();
         $array = $resultado->fetch_all(MYSQLI_ASSOC);
+        
+        $resultado->close();
+        $sentencia->close();
         return $array;
     }
 

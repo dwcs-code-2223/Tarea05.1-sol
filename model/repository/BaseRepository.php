@@ -66,9 +66,9 @@ abstract class BaseRepository implements IBaseRepository {
       
         $sentencia->execute();
 
-        $sentencia->get_result(); //Devuelve false para consultas exitosas de tipo DELETE o UPDATE
+       // $sentencia->get_result(); //Devuelve false para consultas exitosas de tipo DELETE o UPDATE
 
-        $exito= ($sentencia->num_rows ===1);
+        $exito= ($sentencia->affected_rows ===1);
         
         $sentencia->close();
         

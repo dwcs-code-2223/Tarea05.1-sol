@@ -90,6 +90,8 @@ BaseRepository implements IAuthorRepository {
             array_push($author_ids_array, $fila[0]);
         }
 
+        $resultado->close();
+        $sentencia->close();
         return $author_ids_array;
     }
 

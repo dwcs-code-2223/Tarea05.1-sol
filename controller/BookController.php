@@ -215,7 +215,7 @@ class BookController {
             //puede ser null en creación
                 $book->setBook_id($book_id);
             
-//TO DO
+
 
             $exito = $this->bookServicio->save($book, $_POST["authors"]);
             if ($exito) {
